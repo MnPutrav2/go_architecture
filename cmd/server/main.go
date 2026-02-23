@@ -1,8 +1,9 @@
-package cmd
+package main
 
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/MnPutrav2/go_architecture/config"
 	"github.com/MnPutrav2/go_architecture/internal/http/route"
@@ -10,8 +11,7 @@ import (
 	userService "github.com/MnPutrav2/go_architecture/internal/service/user"
 )
 
-func Server(listen string) {
-
+func main() {
 	db := config.InitDB()
 	defer db.Close()
 
@@ -30,6 +30,7 @@ func Server(listen string) {
 
 	// <----- Last ----->
 
+	listen := os.Getenv("LISTEN_PROD")
 	srv := &http.Server{
 		Addr:    listen,
 		Handler: mux,

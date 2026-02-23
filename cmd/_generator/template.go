@@ -8,19 +8,19 @@ import (
 
 func Tempate(name, ty string) {
 	switch ty {
-	case "-s":
+	case "service":
 		temp.TemplateService(name)
 		fmt.Println("Generating success")
 
-	case "-r":
+	case "repo":
 		temp.TemplateRepo(name)
 		fmt.Println("Generating success")
 
-	case "-h":
+	case "handler":
 		temp.TemplateHandle(name)
 		fmt.Println("Generating success")
 
-	case "-a":
+	case "all":
 		temp.TemplateRepo(name)
 		temp.TemplateService(name)
 		temp.TemplateHandle(name)
