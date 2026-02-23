@@ -7,8 +7,8 @@ import (
 
 	userModel "github.com/MnPutrav2/go_architecture/internal/model/user"
 	userService "github.com/MnPutrav2/go_architecture/internal/service/user"
+	"github.com/MnPutrav2/go_architecture/pkg/decoder"
 	"github.com/MnPutrav2/go_architecture/pkg/response"
-	"github.com/MnPutrav2/go_architecture/pkg/util"
 )
 
 type UserHandle struct {
@@ -26,7 +26,7 @@ func (h *UserHandle) Create(w http.ResponseWriter, r *http.Request) {
 	ctx, close := context.WithTimeout(r.Context(), time.Second*5)
 	defer close()
 
-	payload, err := util.BodyDecoder[userModel.Create](r)
+	payload, err := decoder.BodyDecoder[userModel.Create](r)
 	if err != nil {
 		response.Message("failed decode body", err.Error(), "WARN", http.StatusMethodNotAllowed, w, r)
 		return

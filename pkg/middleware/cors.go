@@ -40,12 +40,10 @@ func cors(w http.ResponseWriter, r *http.Request) bool {
 
 }
 
-func CORS(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if cors(w, r) {
-			return
-		}
-
-		next(w, r)
+func CORS(w http.ResponseWriter, r *http.Request) bool {
+	if cors(w, r) {
+		return false
 	}
+
+	return true
 }

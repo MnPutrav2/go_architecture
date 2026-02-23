@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"strings"
@@ -10,6 +11,10 @@ import (
 
 	"github.com/joho/godotenv"
 )
+
+type contextKey string
+
+const UserClaimsKey contextKey = "user_claims"
 
 var _ = godotenv.Load()
 var jwtKey = []byte(os.Getenv("JWT_SECURE_KEY"))
@@ -31,7 +36,7 @@ func Token(r *http.Request) string {
 	return split[1]
 }
 
-func Authorization(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) http.HandlerFunc {
+func Authorization(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		auth := r.Header.Get("Authorization")
 		split := strings.SplitN(auth, " ", 2)
@@ -41,11 +46,13 @@ func Authorization(w http.ResponseWriter, r *http.Request, next http.HandlerFunc
 			return
 		}
 
-		if _, err := jwtEnc.ValidateJWT(split[1]); err != nil {
+		claim, err := jwtEnc.ValidateJWT(split[1])
+		if err != nil {
 			response.Message("unauthorization", err.Error(), "WARN", 401, w, r)
 			return
 		}
 
-		next(w, r)
+		ctx := context.WithValue(r.Context(), UserClaimsKey, claim)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }

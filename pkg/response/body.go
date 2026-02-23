@@ -21,9 +21,8 @@ func Body(response any, param []string, log string, ty string, w http.ResponseWr
 	}
 
 	res, _ := json.Marshal(model.ResponseBody{Response: response, Meta: model.Meta{
-		Status:    status,
-		Method:    r.Method,
-		Parameter: param,
+		Code:   200,
+		Status: status,
 	}})
 	logging.Log(log, ty, r)
 	w.WriteHeader(200)

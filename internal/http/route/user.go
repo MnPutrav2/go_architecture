@@ -15,7 +15,11 @@ func UserRoute(service userService.UserService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
-			middleware.RateLimiter(1, 1, middleware.Authorization(w, r, h.Create))
+			middleware.Chain(
+				h.Create,
+				middleware.Authorization,
+				middleware.RoleAdmin,
+			)(w, r)
 		default:
 			response.Message("method not allowed", "method not allowed", "WARN", http.StatusMethodNotAllowed, w, r)
 		}
