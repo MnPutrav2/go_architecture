@@ -20,7 +20,10 @@ func Message(message string, log string, ty string, code int, w http.ResponseWri
 		status = "Error"
 	}
 
-	res, _ := json.Marshal(model.ResponseMessage{Status: status, Message: message})
+	res, _ := json.Marshal(model.ResponseMessage{Message: message, Meta: model.MetaMessage{
+		Status: status,
+		Method: r.Method,
+	}})
 	logging.Log(log, ty, r)
 	w.WriteHeader(code)
 	w.Write(res)

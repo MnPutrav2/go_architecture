@@ -8,7 +8,7 @@ import (
 	logging "github.com/MnPutrav2/go_architecture/pkg/log"
 )
 
-func Body(response any, log string, ty string, w http.ResponseWriter, r *http.Request) {
+func Body(response any, param []string, log string, ty string, w http.ResponseWriter, r *http.Request) {
 	var status string
 
 	switch ty {
@@ -20,7 +20,11 @@ func Body(response any, log string, ty string, w http.ResponseWriter, r *http.Re
 		status = "Error"
 	}
 
-	res, _ := json.Marshal(model.ResponseBody{Status: status, Response: response})
+	res, _ := json.Marshal(model.ResponseBody{Response: response, Meta: model.Meta{
+		Status:    status,
+		Method:    r.Method,
+		Parameter: param,
+	}})
 	logging.Log(log, ty, r)
 	w.WriteHeader(200)
 	w.Write(res)

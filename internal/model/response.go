@@ -1,13 +1,13 @@
 package model
 
 type ResponseMessage struct {
-	Status  string `json:"status"`
-	Message string `json:"message"`
+	Message string      `json:"message"`
+	Meta    MetaMessage `json:"meta"`
 }
 
 type ResponseBody struct {
-	Status   string `json:"status"`
-	Response any    `json:"result"`
+	Response any  `json:"result"`
+	Meta     Meta `json:"meta"`
 }
 
 type PaginationResponse struct {
@@ -21,4 +21,15 @@ type PaginationMeta struct {
 	Size      int    `json:"size"`
 	Previous  string `json:"previous"`
 	Next      string `json:"next"`
+}
+
+type Meta struct {
+	Status    string   `json:"status"`
+	Method    string   `json:"method"`
+	Parameter []string `json:"parameters"`
+}
+
+type MetaMessage struct {
+	Status string `json:"status"`
+	Method string `json:"method"`
 }
