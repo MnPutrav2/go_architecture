@@ -20,14 +20,14 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-type user struct {
+type User struct {
 	UserID   uuid.UUID `json:"user_id"`
 	Username string    `json:"username"`
 	Role     string    `json:"role"`
 	Exp      time.Time `json:"expired"`
 }
 
-func GenerateJWT(user user) (string, time.Time, error) {
+func GenerateJWT(user User) (string, time.Time, error) {
 	exp, _ := strconv.Atoi(os.Getenv("JWT_EXPIRED_HOUR"))
 	expirationTime := time.Now().Add(time.Duration(exp) * time.Hour)
 

@@ -29,8 +29,6 @@ package route
 import (
 	"%s/internal/http/handler"
 	%sService "%s/internal/service/%s"
-	jwtEnc "%s/pkg/auth/jwt"
-	"%s/pkg/middleware"
 	"%s/pkg/response"
 	"net/http"
 )
@@ -40,14 +38,14 @@ func %sRoute(service %sService.%sService) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-		case "GET":
+		case http.MethodGet:
 			// write here
 		default:
 			response.Message("method not allowed", "method not allowed", "WARN", http.StatusMethodNotAllowed, w, r)
 		}
 	}
 }
-	`, moduleReader(), name, moduleReader(), name, moduleReader(), moduleReader(), moduleReader(), capitalize(name), name, capitalize(name), capitalize(name))
+	`, moduleReader(), name, moduleReader(), name, moduleReader(), capitalize(name), name, capitalize(name), capitalize(name))
 
 	handle := process2(temp, "http/handler", name)
 	routes := process2(route, "http/route", name)
