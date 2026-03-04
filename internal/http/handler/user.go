@@ -11,31 +11,22 @@ import (
 	"github.com/MnPutrav2/go_architecture/pkg/response"
 )
 
-type UserHandle struct {
-	service userService.UserService
-}
+func Login(service userService.UserService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, close := context.WithTimeout(r.Context(), time.Second*5)
+		defer close()
 
-func InitUserHandle(service userService.UserService) *UserHandle {
-	return &UserHandle{service: service}
-}
+		payload, err := decoder.BodyDecoder[userModel.Create](r)
+		if err != nil {
+			response.Message("failed decode body", err.Error(), "WARN", http.StatusMethodNotAllowed, w, r)
+			return
+		}
 
-// Entry
+		if err := service.CreateUser(ctx, payload); err != nil {
+			response.Message("failed create user", err.Error(), "WARN", http.StatusMethodNotAllowed, w, r)
+			return
+		}
 
-func (h *UserHandle) Create(w http.ResponseWriter, r *http.Request) {
-
-	ctx, close := context.WithTimeout(r.Context(), time.Second*5)
-	defer close()
-
-	payload, err := decoder.BodyDecoder[userModel.Create](r)
-	if err != nil {
-		response.Message("failed decode body", err.Error(), "WARN", http.StatusMethodNotAllowed, w, r)
-		return
+		response.Message("success", "success", "INFO", http.StatusCreated, w, r)
 	}
-
-	if err := h.service.CreateUser(ctx, payload); err != nil {
-		response.Message("failed create user", err.Error(), "WARN", http.StatusMethodNotAllowed, w, r)
-		return
-	}
-
-	response.Message("success", "success", "INFO", http.StatusCreated, w, r)
 }

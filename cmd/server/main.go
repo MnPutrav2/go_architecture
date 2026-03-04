@@ -6,9 +6,10 @@ import (
 	"os"
 
 	"github.com/MnPutrav2/go_architecture/config"
-	"github.com/MnPutrav2/go_architecture/internal/http/route"
+	"github.com/MnPutrav2/go_architecture/internal/http/handler"
 	userRepository "github.com/MnPutrav2/go_architecture/internal/repository/user"
 	userService "github.com/MnPutrav2/go_architecture/internal/service/user"
+	"github.com/MnPutrav2/go_architecture/pkg/middleware"
 )
 
 func main() {
@@ -19,14 +20,14 @@ func main() {
 
 	// <----- Entry ----->
 
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
 
 	userRepo := userRepository.InitUserRepository(db)
 	userServ := userService.InitUserService(userRepo)
-	mux.HandleFunc("/user", route.UserRoute(userServ))
+	mux.HandleFunc("POST /user", middleware.Chain(handler.Login(userServ), middleware.Authorization, middleware.CORS))
 
 	// <----- Last ----->
 

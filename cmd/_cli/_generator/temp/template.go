@@ -12,45 +12,11 @@ import (
 
 )
 
-type %sHandle struct {
-	service %sService.%sService
-}
-
-func Init%sHandle(service %sService.%sService) *%sHandle {
-	return &%sHandle{service: service}
-}
-
 // Entry
-`, name, moduleReader(), name, capitalize(name), name, capitalize(name), capitalize(name), name, capitalize(name), capitalize(name), capitalize(name))
-
-	route := fmt.Sprintf(`
-package route
-
-import (
-	"%s/internal/http/handler"
-	%sService "%s/internal/service/%s"
-	"%s/pkg/response"
-	"net/http"
-)
-
-func %sRoute(service %sService.%sService) http.HandlerFunc {
-	h := handler.Init%sHandle(service)
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			// write here
-		default:
-			response.Message("method not allowed", "method not allowed", "WARN", http.StatusMethodNotAllowed, w, r)
-		}
-	}
-}
-	`, moduleReader(), name, moduleReader(), name, moduleReader(), capitalize(name), name, capitalize(name), capitalize(name))
+`, name, moduleReader(), name)
 
 	handle := process2(temp, "http/handler", name)
-	routes := process2(route, "http/route", name)
 	fmt.Println(handle)
-	fmt.Println(routes)
 }
 
 func TemplateRepo(name string) {

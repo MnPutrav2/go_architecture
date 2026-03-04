@@ -8,13 +8,10 @@ import (
 
 	jwtEnc "github.com/MnPutrav2/go_architecture/pkg/auth/jwt"
 	"github.com/MnPutrav2/go_architecture/pkg/response"
+	"github.com/MnPutrav2/go_architecture/pkg/util"
 
 	"github.com/joho/godotenv"
 )
-
-type contextKey string
-
-const UserClaimsKey contextKey = "user_claims"
 
 var _ = godotenv.Load()
 var jwtKey = []byte(os.Getenv("JWT_SECURE_KEY"))
@@ -52,7 +49,7 @@ func Authorization(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), UserClaimsKey, claim)
+		ctx := context.WithValue(r.Context(), util.UserClaimsKey, claim)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }
