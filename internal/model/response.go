@@ -17,6 +17,7 @@ type PaginationResponse struct {
 
 type PaginationMeta struct {
 	TotalData int    `json:"total_data"`
+	TotalPage int    `json:"total_page"`
 	Page      int    `json:"page"`
 	Size      int    `json:"size"`
 	Previous  string `json:"previous"`

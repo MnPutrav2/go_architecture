@@ -3,6 +3,7 @@ package param
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -60,7 +61,40 @@ func Parse(param []string, r *http.Request) ([]string, error) {
 			return nil, fmt.Errorf("empty param %s", p)
 		}
 
-		params = append(params, p)
+		params = append(params, paramParse)
+	}
+
+	return params, nil
+}
+
+func ParseStr(param []string, r *http.Request) ([]string, error) {
+	var params []string
+
+	url := r.URL.Query()
+	for _, p := range param {
+		paramParse := url.Get(p)
+		params = append(params, paramParse)
+	}
+
+	return params, nil
+}
+
+func ParseInt(param []string, r *http.Request) ([]int, error) {
+	var params []int
+
+	url := r.URL.Query()
+	for _, p := range param {
+		paramParse := url.Get(p)
+		if paramParse == "" {
+			return nil, fmt.Errorf("empty param %s", p)
+		}
+
+		i, err := strconv.Atoi(paramParse)
+		if err != nil {
+			return nil, fmt.Errorf("param %s not number", p)
+		}
+
+		params = append(params, i)
 	}
 
 	return params, nil
