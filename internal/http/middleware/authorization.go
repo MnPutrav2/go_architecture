@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -39,13 +40,13 @@ func Authorization(next http.HandlerFunc) http.HandlerFunc {
 		split := strings.SplitN(auth, " ", 2)
 
 		if split[0] != "Bearer" {
-			response.Message("token need bearer", "token need bearer", "WARN", 401, w, r)
+			response.Unauthorization("Unauthorization", fmt.Errorf("Unauthorization"), w, r)
 			return
 		}
 
 		claim, err := jwtEnc.ValidateJWT(split[1])
 		if err != nil {
-			response.Message("unauthorization", err.Error(), "WARN", 401, w, r)
+			response.Unauthorization("Unauthorization", err, w, r)
 			return
 		}
 

@@ -4,16 +4,12 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"time"
-
-	"github.com/google/uuid"
 )
 
 func (q *InitQuery[T]) Insert(D any) *InitQuery[T] {
 
-	val := reflect.TypeOf(q.model)
-	field := val.NumField()
-	val2 := reflect.ValueOf(D)
+	val2 := reflect.TypeOf(D)
+	val3 := reflect.ValueOf(D)
 
 	t := reflect.TypeOf(q.model)
 
@@ -21,31 +17,22 @@ func (q *InitQuery[T]) Insert(D any) *InitQuery[T] {
 		t = t.Elem()
 	}
 
-	var args string
-	var v string
+	var args []string
+	var pre []string
+	var v []any
 
-	for i := range field {
-		if i == val.NumField()-1 {
-			args += val.Field(i).Tag.Get("db")
-			x := val2.Field(i).Interface()
-			switch x.(type) {
-			case int, bool:
-				v += fmt.Sprintf("%d", val2.Field(i).Int())
-			case string, time.Time, uuid.UUID:
-				v += fmt.Sprintf("'%s'", val2.Field(i).String())
-			}
-		} else {
-			args += val.Field(i).Tag.Get("db") + ", "
-			x := val2.Field(i).Interface()
-			switch x.(type) {
-			case int, bool:
-				v += fmt.Sprintf("%d, ", val2.Field(i).Int())
-			case string, time.Time, uuid.UUID:
-				v += fmt.Sprintf("'%s', ", val2.Field(i).String())
-			}
-		}
+	for i := range val2.NumField() {
+		args = append(args, val2.Field(i).Tag.Get("db"))
+		v = append(v, val3.Field(i).Interface())
+		pre = append(pre, fmt.Sprintf("$%d", i+1))
 	}
 
-	q.query = fmt.Sprintf("INSERT INTO %s(%s) VALUES(%s)", strings.ToLower(t.Name()), args, v)
+	q.value = v
+	q.query = fmt.Sprintf("INSERT INTO %s(%s) VALUES(%s)",
+		strings.ToLower(t.Name()),
+		strings.Join(args, ", "),
+		strings.Join(pre, ","),
+	)
+
 	return q
 }

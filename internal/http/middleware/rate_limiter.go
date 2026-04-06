@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 	"strings"
@@ -83,7 +84,7 @@ func RateLimiter(sec, burst int, w http.ResponseWriter, r *http.Request) bool {
 	limiter := limiter(r, sec, burst)
 
 	if !limiter.Allow() {
-		response.Message("Too many requests.", "The demand for resources has already reached its maximum", "WARN", 429, w, r)
+		response.ToManyRequest("Too many requests.", fmt.Errorf("Too many requests."), w, r)
 		return false
 	}
 

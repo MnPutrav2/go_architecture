@@ -15,6 +15,7 @@ type InitQuery[T any] struct {
 	db    *sql.DB
 	model T
 	query string
+	value []any
 }
 
 func Init[T any](db *sql.DB) *InitQuery[T] {
@@ -31,8 +32,7 @@ func InitDB(db *sql.DB) *Initdb {
 
 func (q *InitQuery[T]) Exec(ctx context.Context) error {
 
-	fmt.Println(q.query)
-	if _, err := q.db.ExecContext(ctx, q.query); err != nil {
+	if _, err := q.db.ExecContext(ctx, q.query, q.value...); err != nil {
 		return err
 	}
 

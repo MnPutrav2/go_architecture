@@ -1,4 +1,4 @@
-package response
+package modelresponse
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	logging "github.com/MnPutrav2/go_architecture/pkg/log"
 )
 
-func Message(message string, log string, ty string, code int, w http.ResponseWriter, r *http.Request) {
+func Body(response any, param []string, log string, ty string, w http.ResponseWriter, r *http.Request) {
 	var status string
 
 	switch ty {
@@ -20,11 +20,11 @@ func Message(message string, log string, ty string, code int, w http.ResponseWri
 		status = "Error"
 	}
 
-	res, _ := json.Marshal(model.ResponseMessage{Message: message, Meta: model.Meta{
-		Code:   code,
+	res, _ := json.Marshal(model.ResponseBody{Response: response, Meta: model.Meta{
+		Code:   200,
 		Status: status,
 	}})
 	logging.Log(log, ty, r)
-	w.WriteHeader(code)
+	w.WriteHeader(200)
 	w.Write(res)
 }

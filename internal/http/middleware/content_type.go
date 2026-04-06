@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -11,7 +12,7 @@ func CTJson(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ct := r.Header.Get("Content-Type")
 		if !strings.HasPrefix(ct, "application/json") {
-			response.Message("invalid content type, must be application/json", "invalid content type, must be application/json", "WARN", 400, w, r)
+			response.BadRequest("invalid content type, must be application/json", fmt.Errorf("invalid content type, must be application/json"), w, r)
 			return
 		}
 
@@ -23,7 +24,7 @@ func CTFormData(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ct := r.Header.Get("Content-Type")
 		if !strings.HasPrefix(ct, "multipart/form-data") {
-			response.Message("invalid content type, must be multipart/form-data", "invalid content type, must be multipart/form-data", "WARN", 400, w, r)
+			response.BadRequest("invalid content type, must be multipart/form-data", fmt.Errorf("invalid content type, must be multipart/form-data"), w, r)
 			return
 		}
 
