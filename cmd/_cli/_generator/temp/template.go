@@ -8,19 +8,27 @@ func TemplateHandle(name string) {
 	temp := fmt.Sprintf(`package handler
 
 import (
-	%sService "%s/internal/service/%s"
-
+	"%s/internal/service"
+	"net/http"
 )
 
-// Entry
-`, name, moduleReader(), name)
+func RenameThisHandler(service service.%sService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		
+		// 
 
-	handle := process2(temp, "http/handler", name)
+	}
+}
+
+// Entry
+`, moduleReader(), capitalize(name))
+
+	handle := process2(temp, "http/handler", name+"Handler")
 	fmt.Println(handle)
 }
 
 func TemplateRepo(name string) {
-	temp := fmt.Sprintf(`package %sRepository
+	temp := fmt.Sprintf(`package repository
 
 import (
 	"database/sql"
@@ -30,52 +38,35 @@ type %sRepository struct {
 	db *sql.DB
 }
 
-type %sRepository interface {
-	// write in here
-}
-
-func Init%sRepository(db *sql.DB) %sRepository {
+func Init%sRepository(db *sql.DB) *%sRepository {
 	return &%sRepository{db: db}
 }
 
 // Entry
-	`, name, name, capitalize(name), capitalize(name), capitalize(name), name)
+	`, capitalize(name), name, capitalize(name), capitalize(name))
 
-	tempq := fmt.Sprintf(`package %sRepository
-
-var (
-	// query = 
-)
-	`, name)
-
-	handle := process(temp, "repository/", name, "impl")
-	handle2 := process(tempq, "repository/", name, "query")
+	handle := process2(temp, "repository/", name+"Repository")
 	fmt.Println(handle)
-	fmt.Println(handle2)
 }
 
 func TemplateService(name string) {
-	temp := fmt.Sprintf(`package %sService
+	temp := fmt.Sprintf(`package service
 
 import (
-	%sRepository "%s/internal/repository/%s"
+	"%s/internal/repository"
 )
 
 type %sService struct {
-	repo %sRepository.%sRepository
+	repo repository.%sRepository
 }
 
-type %sService interface {
-	// write in here
-}
-
-func Init%sService(repo %sRepository.%sRepository) %sService {
+func Init%sService(repo repository.%sRepository) *%sService {
 	return &%sService{repo: repo}
 }
 
 // Entry
-	`, name, name, moduleReader(), name, name, name, capitalize(name), capitalize(name), capitalize(name), name, capitalize(name), capitalize(name), name)
+	`, moduleReader(), capitalize(name), capitalize(name), capitalize(name), capitalize(name), capitalize(name), capitalize(name))
 
-	handle := process(temp, "service/", name, "impl")
+	handle := process2(temp, "service/", name+"Service")
 	fmt.Println(handle)
 }

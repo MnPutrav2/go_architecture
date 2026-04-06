@@ -14,11 +14,11 @@ func capitalize(word string) string {
 	return strings.ToUpper(word[:1]) + word[1:]
 }
 
-func process(template, path, dir, name string) string {
+func process(template, path, name string) string {
 	file := name + ".go"
 
-	os.MkdirAll("internal/"+path+dir, 0o755)
-	handlePath := "internal/" + path + dir
+	os.MkdirAll("internal/"+path, 0o755)
+	handlePath := "internal/" + path
 	save := filepath.Join(handlePath, file)
 
 	os.WriteFile(save, []byte(template), 0o644)

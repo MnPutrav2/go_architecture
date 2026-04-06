@@ -6,35 +6,17 @@ import (
 	"os"
 
 	"github.com/MnPutrav2/go_architecture/config"
-	"github.com/MnPutrav2/go_architecture/internal/http/handler"
-	userRepository "github.com/MnPutrav2/go_architecture/internal/repository/user"
-	userService "github.com/MnPutrav2/go_architecture/internal/service/user"
-	"github.com/MnPutrav2/go_architecture/pkg/middleware"
+	"github.com/MnPutrav2/go_architecture/internal/http/route"
 )
 
 func main() {
 	db := config.InitDB()
 	defer db.Close()
 
-	mux := http.NewServeMux()
-
-	// <----- Entry ----->
-
-	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
-	})
-
-	userRepo := userRepository.InitUserRepository(db)
-	userServ := userService.InitUserService(userRepo)
-	mux.HandleFunc("POST /user", middleware.Chain(handler.Login(userServ), middleware.Authorization, middleware.CORS))
-
-	// <----- Last ----->
-
 	listen := os.Getenv("LISTEN_PROD")
 	srv := &http.Server{
 		Addr:    listen,
-		Handler: mux,
+		Handler: route.Route(db),
 	}
 
 	fmt.Println("Server listen in port " + listen)
