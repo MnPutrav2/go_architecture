@@ -1,5 +1,7 @@
+include .env
+
 build:
-	go build ./cmd/server
+	go build -o $(APP_NAME).exe ./cmd/server
 
 run:
 	go run ./cmd/server

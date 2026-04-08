@@ -11,6 +11,8 @@ import (
 	"github.com/MnPutrav2/go_architecture/pkg/response"
 )
 
+// Entry
+
 func CreateUserHandler(service service.UserService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, close := context.WithTimeout(r.Context(), time.Second*5)
@@ -30,5 +32,3 @@ func CreateUserHandler(service service.UserService) http.HandlerFunc {
 		response.Created("Success", w, r)
 	}
 }
-
-// Entry
