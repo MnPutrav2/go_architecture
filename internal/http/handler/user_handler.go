@@ -7,8 +7,8 @@ import (
 
 	"github.com/MnPutrav2/go_architecture/internal/model"
 	"github.com/MnPutrav2/go_architecture/internal/service"
-	"github.com/MnPutrav2/go_architecture/pkg/decoder"
 	"github.com/MnPutrav2/go_architecture/pkg/response"
+	"github.com/MnPutrav2/go_architecture/pkg/validator"
 )
 
 // Entry
@@ -18,9 +18,11 @@ func CreateUserHandler(service service.UserService) http.HandlerFunc {
 		ctx, close := context.WithTimeout(r.Context(), time.Second*5)
 		defer close()
 
-		body, err := decoder.BodyDecoder[model.CreateUser](r)
+		body, err := validator.ValidatePayload[model.CreateUser]([]string{
+			"required|max:5|min:3",
+		}, r)
 		if err != nil {
-			response.BadRequest("Failed decode body", err, w, r)
+			response.BadRequest(err.Error(), err, w, r)
 			return
 		}
 
