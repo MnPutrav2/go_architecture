@@ -3,34 +3,65 @@ package handler
 import (
 	"context"
 	"net/http"
-	"time"
 
+	"github.com/MnPutrav2/go_architecture/internal/helper"
 	"github.com/MnPutrav2/go_architecture/internal/model"
 	"github.com/MnPutrav2/go_architecture/internal/service"
-	"github.com/MnPutrav2/go_architecture/pkg/response"
+	"github.com/MnPutrav2/go_architecture/pkg/prefix"
+	res "github.com/MnPutrav2/go_architecture/pkg/response"
 	"github.com/MnPutrav2/go_architecture/pkg/validator"
 )
 
 // Entry
 
-func CreateUserHandler(service service.UserService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx, close := context.WithTimeout(r.Context(), time.Second*5)
-		defer close()
+func GetUserHandler(service service.UserService) http.HandlerFunc {
+	return helper.Handler(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
-		body, err := validator.ValidatePayload[model.CreateUser]([]string{
-			"required|max:5|min:3",
-		}, r)
+		result, err := service.GetUserService(ctx)
 		if err != nil {
-			response.BadRequest(err.Error(), err, w, r)
+			res.BadRequest("Failed create account", err, w, r)
+			return
+		}
+
+		res.Data("Success", result, w, r)
+
+	})
+}
+
+func CreateUserHandler(service service.UserService) http.HandlerFunc {
+	return helper.Handler(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+
+		body, err := validator.ValidatePayload[model.CreateUser](r)
+		if err != nil {
+			res.BadRequest(err.Error(), err, w, r)
 			return
 		}
 
 		if err := service.CreateUserService(ctx, body); err != nil {
-			response.BadRequest("Failed create account", err, w, r)
+			res.BadRequest("Failed create account", err, w, r)
 			return
 		}
 
-		response.Created("Success", w, r)
-	}
+		res.Created("Success", w, r)
+
+	})
+}
+
+func DeleteUserHandler(service service.UserService) http.HandlerFunc {
+	return helper.Handler(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+
+		param, err := prefix.UUID("id", r)
+		if err != nil {
+			res.BadRequest(err.Error(), err, w, r)
+			return
+		}
+
+		if err := service.DeleteUserService(ctx, param); err != nil {
+			res.BadRequest("Failed remove account", err, w, r)
+			return
+		}
+
+		res.Success("Success", w, r)
+
+	})
 }

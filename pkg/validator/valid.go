@@ -82,7 +82,7 @@ func Validate(validator []string, payload any) error {
 	return fmt.Errorf("%s", strings.Join(errs, ", "))
 }
 
-func ValidatePayload[T any](validator []string, r *http.Request) (T, error) {
+func ValidatePayload[T any](r *http.Request) (T, error) {
 	var e T
 	payload, err := decoder.BodyDecoder[T](r)
 	if err != nil {
@@ -91,19 +91,16 @@ func ValidatePayload[T any](validator []string, r *http.Request) (T, error) {
 
 	payloadType := reflect.TypeOf(payload)
 	payloadValue := reflect.ValueOf(payload)
-	tipeRange := len(validator)
 	var errs []string
 
 	if payloadType.Kind() == reflect.Pointer {
 		payloadType = payloadType.Elem()
 	}
 
-	if tipeRange != payloadValue.NumField() {
-		return e, fmt.Errorf("invalid validator format")
-	}
+	for i := range payloadType.NumField() {
+		validRange := strings.Split(payloadType.Field(i).Tag.Get("validate"), ";")
 
-	for i := range tipeRange {
-		validRange := strings.Split(validator[i], "|")
+		fmt.Println(validRange)
 		var er []string
 		for x := range len(validRange) {
 
@@ -121,26 +118,26 @@ func ValidatePayload[T any](validator []string, r *http.Request) (T, error) {
 			}
 
 			// Max value
-			if strings.Contains(validRange[x], "max") {
+			if strings.Contains(validRange[x], "max:") {
 				h := strings.Split(validRange[x], ":")
 				c := payloadValue.Field(i).String()
 				x := len(c)
 
 				m, _ := strconv.Atoi(h[1])
 				if x > m {
-					er = append(er, fmt.Sprintf("maximux %s chacter", h[1]))
+					er = append(er, fmt.Sprintf("maximux %s character", h[1]))
 				}
 			}
 
 			// Min value
-			if strings.Contains(validRange[x], "min") {
+			if strings.Contains(validRange[x], "min:") {
 				h := strings.Split(validRange[x], ":")
 				c := payloadValue.Field(i).String()
 				x := len(c)
 
 				m, _ := strconv.Atoi(h[1])
 				if x < m {
-					er = append(er, fmt.Sprintf("minimal %s chacter", h[1]))
+					er = append(er, fmt.Sprintf("minimal %s character", h[1]))
 				}
 			}
 

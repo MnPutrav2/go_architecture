@@ -10,6 +10,10 @@ func Created(message string, w http.ResponseWriter, r *http.Request) {
 	modelresponse.Message(message, "Success", "INFO", http.StatusCreated, w, r)
 }
 
+func Success(message string, w http.ResponseWriter, r *http.Request) {
+	modelresponse.Message(message, "Success", "INFO", http.StatusOK, w, r)
+}
+
 func BadRequest(message string, err error, w http.ResponseWriter, r *http.Request) {
 	modelresponse.Message(message, err.Error(), "WARN", http.StatusBadRequest, w, r)
 }
@@ -24,6 +28,10 @@ func ToManyRequest(message string, err error, w http.ResponseWriter, r *http.Req
 
 func Forbidden(message string, err error, w http.ResponseWriter, r *http.Request) {
 	modelresponse.Message(message, err.Error(), "WARN", http.StatusForbidden, w, r)
+}
+
+func Data(message string, data any, w http.ResponseWriter, r *http.Request) {
+	modelresponse.Body(data, []string{}, "Success", "INFO", w, r)
 }
 
 // Add more

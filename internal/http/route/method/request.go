@@ -17,6 +17,16 @@ func GET(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...ut
 	mux.HandleFunc(pt, next)
 }
 
+func DELETE(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...util.Middleware) {
+	pt := fmt.Sprintf("DELETE %s", pattern)
+
+	for _, handle := range middle {
+		next = handle(next)
+	}
+
+	mux.HandleFunc(pt, next)
+}
+
 func POST(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...util.Middleware) {
 	pt := fmt.Sprintf("POST %s", pattern)
 

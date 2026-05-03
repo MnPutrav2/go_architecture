@@ -11,22 +11,21 @@ import (
 	"context"
 	"net/http"
 	"time"
+	"%s/internal/helper"
 
 	"%s/internal/service"
 )
 
 func RenameThisHandler(service service.%sService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx, close := context.WithTimeout(r.Context(), time.Second*5)
-		defer close()
-		
-		// 
+	return helper.Handler(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
-	}
+		// Write here
+
+	})
 }
 
 // Entry
-`, moduleReader(), capitalize(name))
+`, moduleReader(), moduleReader(), capitalize(name))
 
 	handle := process2(temp, "http/handler", name+"_handler")
 	fmt.Println(handle)

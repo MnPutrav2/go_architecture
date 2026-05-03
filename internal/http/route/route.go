@@ -21,6 +21,8 @@ func Route(db *sql.DB) *http.ServeMux {
 	})
 
 	m.POST(mux, "/register", handler.CreateUserHandler(*service.InitUserService(*repository.InituserRepository(db))))
+	m.GET(mux, "/users", handler.GetUserHandler(*service.InitUserService(*repository.InituserRepository(db))))
+	m.DELETE(mux, "/users/{id}", handler.DeleteUserHandler(*service.InitUserService(*repository.InituserRepository(db))))
 
 	// [ Register route in here ]
 

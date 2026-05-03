@@ -12,5 +12,5 @@ type Users struct {
 // Database model
 
 type CreateUser struct {
-	Name string `json:"name" db:"name"`
+	Name string `json:"name" db:"name" validate:"required;min:3;max:5"`
 }

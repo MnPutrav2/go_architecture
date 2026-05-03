@@ -22,20 +22,36 @@ func (q *Initdb) Migrate(table ...any) {
 			continue
 		}
 
+		var ty string
 		var args string
 		for i := 0; i < t.NumField(); i++ {
 
 			ts := t.Field(i).Tag.Get("structure")
 			td := t.Field(i).Tag.Get("db")
+			var x string
+
+			if strings.Contains(ts, "enum") {
+				var n []string
+				s := strings.Split(ts, "(")
+				c := strings.SplitSeq(strings.TrimSpace(strings.ReplaceAll(s[1], ")", "")), ",")
+
+				for m := range c {
+					n = append(n, fmt.Sprintf(`'%s'`, m))
+				}
+
+				x += fmt.Sprintf("%s_ty NOT NULL DEFAULT %s", strings.ToLower(t.Name()), n[0])
+				ty += fmt.Sprintf(`CREATE TYPE %s_ty AS ENUM %s; `, strings.ToLower(t.Name()), "("+strings.Join(n, ",")+")")
+			}
 
 			cut := strings.Split(ts, ";")
 
-			var x string
-			for l := range len(cut) {
-				c := strings.Split(cut[l], "-")
+			if !strings.Contains(ts, "enum") {
+				for l := range len(cut) {
+					c := strings.Split(cut[l], "-")
 
-				for n := range len(c) {
-					x += fmt.Sprintf("%s ", c[n])
+					for n := range len(c) {
+						x += fmt.Sprintf("%s ", c[n])
+					}
 				}
 			}
 
@@ -52,7 +68,7 @@ func (q *Initdb) Migrate(table ...any) {
 			}
 		}
 
-		query := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (%s)`, strings.ToLower(t.Name()), args)
+		query := fmt.Sprintf(`%s CREATE TABLE IF NOT EXISTS %s (%s)`, ty, strings.ToLower(t.Name()), args)
 		if _, err := q.db.Exec(query); err != nil {
 			if strings.Contains(err.Error(), "does not exist") ||
 				strings.Contains(err.Error(), "not found") {

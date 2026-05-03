@@ -20,7 +20,16 @@ func (q *Initdb) Rollback(table ...any) {
 			continue
 		}
 
-		query := fmt.Sprintf(`DROP TABLE %s`, strings.ToLower(t.Name()))
+		var x []string
+		for i := 0; i < t.NumField(); i++ {
+			ts := t.Field(i).Tag.Get("structure")
+
+			if strings.Contains(ts, "enum") {
+				x = append(x, fmt.Sprintf(`DROP TYPE IF EXISTS %s_ty`, strings.ToLower(t.Name())))
+			}
+		}
+
+		query := fmt.Sprintf(`%s DROP TABLE %s`, strings.Join(x, ";"), strings.ToLower(t.Name()))
 		if _, err := q.db.Exec(query); err != nil {
 			if strings.Contains(err.Error(), "does not exist") ||
 				strings.Contains(err.Error(), "not found") {
