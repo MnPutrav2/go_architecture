@@ -34,4 +34,8 @@ func Data(message string, data any, w http.ResponseWriter, r *http.Request) {
 	modelresponse.Body(data, []string{}, "Success", "INFO", w, r)
 }
 
+func Pagination(message string, data any, page, size, total int, keyword string, w http.ResponseWriter, r *http.Request) {
+	modelresponse.Pagination(data, page, size, total, keyword, "INFO", "Success", w, r)
+}
+
 // Add more

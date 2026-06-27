@@ -10,7 +10,6 @@ func TemplateHandle(name string) {
 import (
 	"context"
 	"net/http"
-	"time"
 	"%s/internal/helper"
 
 	"%s/internal/service"

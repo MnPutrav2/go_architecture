@@ -5,12 +5,13 @@ import (
 	"net/http"
 
 	"github.com/MnPutrav2/go_architecture/internal/http/handler"
+	"github.com/MnPutrav2/go_architecture/internal/http/middleware"
 	m "github.com/MnPutrav2/go_architecture/internal/http/route/method"
 	"github.com/MnPutrav2/go_architecture/internal/repository"
 	"github.com/MnPutrav2/go_architecture/internal/service"
 )
 
-func Route(db *sql.DB) *http.ServeMux {
+func Route(db *sql.DB) http.Handler {
 	mux := http.NewServeMux()
 
 	// [ Register route in here ]
@@ -26,5 +27,11 @@ func Route(db *sql.DB) *http.ServeMux {
 
 	// [ Register route in here ]
 
-	return mux
+	// [ Add middleware ]
+
+	md := middleware.HandeCORS(mux)
+
+	// [ Add middleware ]
+
+	return md
 }

@@ -36,3 +36,23 @@ func POST(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...u
 
 	mux.HandleFunc(pt, next)
 }
+
+func PUT(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...util.Middleware) {
+	pt := fmt.Sprintf("PATCH %s", pattern)
+
+	for _, handle := range middle {
+		next = handle(next)
+	}
+
+	mux.HandleFunc(pt, next)
+}
+
+func PATCH(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...util.Middleware) {
+	pt := fmt.Sprintf("PATCH %s", pattern)
+
+	for _, handle := range middle {
+		next = handle(next)
+	}
+
+	mux.HandleFunc(pt, next)
+}
