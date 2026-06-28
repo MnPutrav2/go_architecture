@@ -1,15 +1,15 @@
 export default function App() {
     return (
         <main className="container">
-            <h1>Digo Framework</h1>
+            <h1>Golang</h1>
 
             <p>
-                Selamat datang di Digo 🚀
+                Golang structure project like laravel
             </p>
 
             <button
                 onClick={() => {
-                    alert("Hello from Digo!");
+                    alert("Hello!");
                 }}
             >
                 Click Me
