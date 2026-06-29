@@ -1,6 +1,10 @@
 package model
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 // Database model
 
@@ -17,4 +21,14 @@ type CreateUser struct {
 	Name     string `json:"name" db:"name" validate:"required;min:3;max:5"`
 	Password string `json:"password" db:"password" validate:"required;min:8"`
 	Email    string `json:"email" db:"email" validate:"required"`
+}
+
+type LoginUser struct {
+	Name     string `json:"name" db:"name" validate:"required;min:3;max:5"`
+	Password string `json:"password" db:"password" validate:"required;min:8"`
+}
+
+type Token struct {
+	Token   string    `json:"token"`
+	Expired time.Time `json:"expired"`
 }

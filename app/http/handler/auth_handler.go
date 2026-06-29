@@ -13,20 +13,6 @@ import (
 
 // Entry
 
-func GetUserHandler(service service.UserService) http.HandlerFunc {
-	return helper.Handler(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-
-		result, err := service.GetUserService(ctx)
-		if err != nil {
-			res.BadRequest("Failed create account", err, w, r)
-			return
-		}
-
-		res.Data("Success", result, w, r)
-
-	})
-}
-
 func CreateUserHandler(service service.UserService) http.HandlerFunc {
 	return helper.Handler(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
@@ -42,6 +28,26 @@ func CreateUserHandler(service service.UserService) http.HandlerFunc {
 		}
 
 		res.Created("Success", w, r)
+
+	})
+}
+
+func LoginUserHandler(service service.UserService) http.HandlerFunc {
+	return helper.Handler(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+
+		body, err := validator.ValidatePayload[model.LoginUser](r)
+		if err != nil {
+			res.BadRequest(err.Error(), err, w, r)
+			return
+		}
+
+		result, err := service.LoginUserService(ctx, body)
+		if err != nil {
+			res.BadRequest("Failed create account", err, w, r)
+			return
+		}
+
+		res.Data("success", result, w, r)
 
 	})
 }

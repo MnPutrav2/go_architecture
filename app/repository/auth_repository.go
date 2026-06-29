@@ -6,7 +6,6 @@ import (
 
 	"github.com/MnPutrav2/go_architecture/app/model"
 	"github.com/MnPutrav2/go_architecture/app/pkg/query"
-	"github.com/google/uuid"
 )
 
 type UserRepository struct {
@@ -26,19 +25,11 @@ func (q *UserRepository) CreateUserRepository(ctx context.Context, request model
 	return nil
 }
 
-func (q *UserRepository) GetUserRepository(ctx context.Context) ([]model.Users, error) {
-	result, err := query.Init[model.Users](q.db).Select("id, name").FindAll(ctx)
+func (q *UserRepository) GetUserRepository(ctx context.Context, username string) (model.Users, error) {
+	result, err := query.Init[model.Users](q.db).Select("id, name, password, email").Where("name", username).Find(ctx)
 	if err != nil {
-		return nil, err
+		return model.Users{}, err
 	}
 
 	return result, nil
-}
-
-func (q *UserRepository) DeleteUserRepository(ctx context.Context, id uuid.UUID) error {
-	if err := query.Init[model.Users](q.db).Delete("id", id.String()).Exec(ctx); err != nil {
-		return err
-	}
-
-	return nil
 }

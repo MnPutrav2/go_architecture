@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/MnPutrav2/go_architecture/app/model"
+	jwtEnc "github.com/MnPutrav2/go_architecture/app/pkg/auth/jwt"
 	"github.com/MnPutrav2/go_architecture/app/pkg/password"
 	"github.com/MnPutrav2/go_architecture/app/repository"
-	"github.com/google/uuid"
 )
 
 type UserService struct {
@@ -38,19 +40,26 @@ func (s *UserService) CreateUserService(ctx context.Context, request model.Creat
 	return nil
 }
 
-func (s *UserService) GetUserService(ctx context.Context) ([]model.Users, error) {
-	result, err := s.repo.GetUserRepository(ctx)
+func (s *UserService) LoginUserService(ctx context.Context, username model.LoginUser) (model.Token, error) {
+	result, err := s.repo.GetUserRepository(ctx, username.Name)
 	if err != nil {
-		return nil, err
+		return model.Token{}, err
 	}
 
-	return result, nil
-}
-
-func (s *UserService) DeleteUserService(ctx context.Context, id uuid.UUID) error {
-	if err := s.repo.DeleteUserRepository(ctx, id); err != nil {
-		return err
+	if !password.Check(username.Password, result.Password) {
+		return model.Token{}, fmt.Errorf("invalid username or password")
 	}
 
-	return nil
+	token, exp, err := jwtEnc.GenerateJWT(jwtEnc.User{
+		UserID:   result.ID,
+		Username: result.Name,
+		Role:     "admin",
+		Exp:      time.Now().Add(5),
+	})
+
+	if err != nil {
+		return model.Token{}, err
+	}
+
+	return model.Token{Token: token, Expired: exp}, nil
 }

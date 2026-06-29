@@ -37,7 +37,7 @@ func Route(mux *http.ServeMux, db *sql.DB) http.Handler {
 	})
 
 	m.POST(mux, "/register", handler.CreateUserHandler(*service.InitUserService(*repository.InituserRepository(db))))
-	m.GET(mux, "/users", handler.GetUserHandler(*service.InitUserService(*repository.InituserRepository(db))))
+	m.POST(mux, "/login", handler.LoginUserHandler(*service.InitUserService(*repository.InituserRepository(db))))
 
 	// [ Register route in here ]
 
