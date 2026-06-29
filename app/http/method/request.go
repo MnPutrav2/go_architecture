@@ -8,7 +8,7 @@ import (
 )
 
 func GET(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...util.Middleware) {
-	pt := fmt.Sprintf("GET %s", pattern)
+	pt := fmt.Sprintf("GET %s", fmt.Sprintf("/api%s", pattern))
 
 	for _, handle := range middle {
 		next = handle(next)
@@ -18,7 +18,7 @@ func GET(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...ut
 }
 
 func DELETE(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...util.Middleware) {
-	pt := fmt.Sprintf("DELETE %s", pattern)
+	pt := fmt.Sprintf("DELETE %s", fmt.Sprintf("/api%s", pattern))
 
 	for _, handle := range middle {
 		next = handle(next)
@@ -28,7 +28,7 @@ func DELETE(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ..
 }
 
 func POST(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...util.Middleware) {
-	pt := fmt.Sprintf("POST %s", pattern)
+	pt := fmt.Sprintf("POST %s", fmt.Sprintf("/api%s", pattern))
 
 	for _, handle := range middle {
 		next = handle(next)
@@ -38,7 +38,7 @@ func POST(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...u
 }
 
 func PUT(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...util.Middleware) {
-	pt := fmt.Sprintf("PATCH %s", pattern)
+	pt := fmt.Sprintf("PATCH %s", fmt.Sprintf("/api%s", pattern))
 
 	for _, handle := range middle {
 		next = handle(next)
@@ -48,7 +48,7 @@ func PUT(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...ut
 }
 
 func PATCH(mux *http.ServeMux, pattern string, next http.HandlerFunc, middle ...util.Middleware) {
-	pt := fmt.Sprintf("PATCH %s", pattern)
+	pt := fmt.Sprintf("PATCH %s", fmt.Sprintf("/api%s", pattern))
 
 	for _, handle := range middle {
 		next = handle(next)

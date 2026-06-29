@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/MnPutrav2/go_architecture/app/model"
+	"github.com/MnPutrav2/go_architecture/app/pkg/password"
 	"github.com/MnPutrav2/go_architecture/app/repository"
 	"github.com/google/uuid"
 )
@@ -18,7 +19,19 @@ func InitUserService(repo repository.UserRepository) *UserService {
 
 // Entry
 func (s *UserService) CreateUserService(ctx context.Context, request model.CreateUser) error {
-	if err := s.repo.CreateUserRepository(ctx, request); err != nil {
+
+	pw, err := password.Hash(request.Password)
+	if err != nil {
+		return err
+	}
+
+	payload := model.CreateUser{
+		Name:     request.Name,
+		Password: pw,
+		Email:    request.Email,
+	}
+
+	if err := s.repo.CreateUserRepository(ctx, payload); err != nil {
 		return err
 	}
 

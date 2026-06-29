@@ -83,76 +83,97 @@ func Validate(validator []string, payload any) error {
 }
 
 func ValidatePayload[T any](r *http.Request) (T, error) {
-	var e T
+	var zero T
+
 	payload, err := decoder.BodyDecoder[T](r)
 	if err != nil {
-		return e, fmt.Errorf("failed decode body")
+		return zero, fmt.Errorf("failed decode body")
 	}
 
 	payloadType := reflect.TypeOf(payload)
 	payloadValue := reflect.ValueOf(payload)
-	var errs []string
 
+	// Jika suatu saat decoder mengembalikan pointer
 	if payloadType.Kind() == reflect.Pointer {
 		payloadType = payloadType.Elem()
+		payloadValue = payloadValue.Elem()
 	}
 
-	for i := range payloadType.NumField() {
-		validRange := strings.Split(payloadType.Field(i).Tag.Get("validate"), ";")
+	if payloadType.Kind() != reflect.Struct {
+		return zero, fmt.Errorf("payload must be struct")
+	}
 
-		fmt.Println(validRange)
-		var er []string
-		for x := range len(validRange) {
+	var errs []string
 
-			// Nullabel
-			if strings.Contains(validRange[x], "null") {
-				return e, nil
-			}
+	for i := 0; i < payloadType.NumField(); i++ {
 
-			// Required
-			if strings.Contains(validRange[x], "required") {
-				c := payloadValue.Field(i).String()
-				if c == "" {
-					er = append(er, "required value")
+		field := payloadType.Field(i)
+		value := payloadValue.Field(i)
+
+		rules := strings.Split(field.Tag.Get("validate"), ";")
+
+		var fieldErr []string
+
+		for _, rule := range rules {
+
+			switch {
+
+			// nullable
+			case rule == "null":
+				continue
+
+			// required
+			case rule == "required":
+				switch value.Kind() {
+				case reflect.String:
+					if strings.TrimSpace(value.String()) == "" {
+						fieldErr = append(fieldErr, "required")
+					}
+				}
+
+			// min:x
+			case strings.HasPrefix(rule, "min:"):
+				if value.Kind() != reflect.String {
+					continue
+				}
+
+				n, _ := strconv.Atoi(strings.TrimPrefix(rule, "min:"))
+				if len(value.String()) < n {
+					fieldErr = append(fieldErr, fmt.Sprintf("minimum %d characters", n))
+				}
+
+			// max:x
+			case strings.HasPrefix(rule, "max:"):
+				if value.Kind() != reflect.String {
+					continue
+				}
+
+				n, _ := strconv.Atoi(strings.TrimPrefix(rule, "max:"))
+				if len(value.String()) > n {
+					fieldErr = append(fieldErr, fmt.Sprintf("maximum %d characters", n))
 				}
 			}
-
-			// Max value
-			if strings.Contains(validRange[x], "max:") {
-				h := strings.Split(validRange[x], ":")
-				c := payloadValue.Field(i).String()
-				x := len(c)
-
-				m, _ := strconv.Atoi(h[1])
-				if x > m {
-					er = append(er, fmt.Sprintf("maximux %s character", h[1]))
-				}
-			}
-
-			// Min value
-			if strings.Contains(validRange[x], "min:") {
-				h := strings.Split(validRange[x], ":")
-				c := payloadValue.Field(i).String()
-				x := len(c)
-
-				m, _ := strconv.Atoi(h[1])
-				if x < m {
-					er = append(er, fmt.Sprintf("minimal %s character", h[1]))
-				}
-			}
-
 		}
 
-		if len(er) == 0 {
-			return e, nil
+		if len(fieldErr) > 0 {
+
+			name := field.Tag.Get("json")
+			if name == "" {
+				name = field.Name
+			}
+
+			errs = append(errs,
+				fmt.Sprintf("%s (%s)",
+					name,
+					strings.Join(fieldErr, ", "),
+				),
+			)
 		}
-
-		errs = append(errs, fmt.Sprintf("Field %s (%s)", payloadType.Field(i).Tag.Get("json"), strings.Join(er, ",")))
 	}
 
-	if len(errs) == 0 {
-		return e, nil
+	if len(errs) > 0 {
+		return zero, fmt.Errorf("%s", strings.Join(errs, "; "))
 	}
 
-	return e, fmt.Errorf("%s", strings.Join(errs, ", "))
+	return payload, nil
 }

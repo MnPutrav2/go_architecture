@@ -32,7 +32,7 @@ func main() {
 	listen := os.Getenv("LISTEN_PROD")
 	srv := &http.Server{
 		Addr:    listen,
-		Handler: route.RouteApi(mux, db),
+		Handler: route.Route(mux, db),
 	}
 
 	list := fmt.Sprintf(`

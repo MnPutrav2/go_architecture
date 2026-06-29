@@ -2,6 +2,7 @@ include .env
 
 build:
 	go build -o $(APP_NAME).exe ./cmd/server
+	npm run build
 
 run:
 	go run ./cmd/server
