@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	textformater "github.com/MnPutrav2/go_architecture/app/pkg/text_formater"
 )
 
 func (q *InitQuery[T]) Select(arg string) *InitQuery[T] {
@@ -23,6 +25,6 @@ func (q *InitQuery[T]) Select(arg string) *InitQuery[T] {
 		}
 	}
 
-	q.query += fmt.Sprintf("SELECT %s FROM %s", query, strings.ToLower(t.Name()))
+	q.query += fmt.Sprintf("SELECT %s FROM %s", query, strings.ToLower(textformater.ToSnakeCase(t.Name())))
 	return q
 }

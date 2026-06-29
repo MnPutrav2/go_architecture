@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	textformater "github.com/MnPutrav2/go_architecture/app/pkg/text_formater"
 )
 
 func (q *InitQuery[T]) Delete(que string, arg ...string) *InitQuery[T] {
@@ -13,7 +15,7 @@ func (q *InitQuery[T]) Delete(que string, arg ...string) *InitQuery[T] {
 		t = t.Elem()
 	}
 
-	q.query = fmt.Sprintf("DELETE FROM %s", strings.ToLower(t.Name()))
+	q.query = fmt.Sprintf("DELETE FROM %s", strings.ToLower(textformater.ToSnakeCase(t.Name())))
 	cut := strings.Split(que, ",")
 	if len(cut) == 1 {
 		q.query += fmt.Sprintf(" WHERE %s = '%s'", que, arg[0])

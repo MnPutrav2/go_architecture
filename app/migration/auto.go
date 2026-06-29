@@ -10,5 +10,6 @@ import (
 func Auto(db *sql.DB) {
 	query.InitDB(db).Migrate(
 		model.Users{},
+		model.RefreshToken{},
 	)
 }

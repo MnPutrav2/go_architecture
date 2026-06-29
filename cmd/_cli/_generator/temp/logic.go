@@ -17,8 +17,8 @@ func capitalize(word string) string {
 func process(template, path, name string) string {
 	file := name + ".go"
 
-	os.MkdirAll("internal/"+path, 0o755)
-	handlePath := "internal/" + path
+	os.MkdirAll("app/"+path, 0o755)
+	handlePath := "app/" + path
 	save := filepath.Join(handlePath, file)
 
 	os.WriteFile(save, []byte(template), 0o644)
@@ -28,8 +28,8 @@ func process(template, path, name string) string {
 func process2(template, path, name string) string {
 	file := name + ".go"
 
-	os.MkdirAll("internal/"+path, 0o755)
-	handlePath := "internal/" + path
+	os.MkdirAll("app/"+path, 0o755)
+	handlePath := "app/" + path
 	save := filepath.Join(handlePath, file)
 
 	os.WriteFile(save, []byte(template), 0o644)

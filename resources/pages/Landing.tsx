@@ -18,7 +18,7 @@ function LoginCard({onClose}: {onClose: () => void}): JSX.Element {
             sessionStorage.setItem("token", json.result.token)
             alert("success")
             onClose()
-            navigate("/dasboard")
+            navigate("/dashboard")
         }catch(e){
             alert(e)
         }

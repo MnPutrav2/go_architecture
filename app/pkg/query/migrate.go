@@ -5,6 +5,8 @@ import (
 	"log"
 	"reflect"
 	"strings"
+
+	textformater "github.com/MnPutrav2/go_architecture/app/pkg/text_formater"
 )
 
 func (q *Initdb) Migrate(table ...any) {
@@ -22,62 +24,96 @@ func (q *Initdb) Migrate(table ...any) {
 			continue
 		}
 
-		var ty string
-		var args string
+		var (
+			createTypeSQL string
+			columns       []string
+			constraints   []string
+		)
+
 		for i := 0; i < t.NumField(); i++ {
 
-			ts := t.Field(i).Tag.Get("structure")
-			td := t.Field(i).Tag.Get("db")
-			var x string
+			field := t.Field(i)
 
-			if strings.Contains(ts, "enum") {
-				var n []string
-				s := strings.Split(ts, "(")
-				c := strings.SplitSeq(strings.TrimSpace(strings.ReplaceAll(s[1], ")", "")), ",")
+			ts := field.Tag.Get("structure")
+			td := strings.ToLower(field.Tag.Get("db"))
 
-				for m := range c {
-					n = append(n, fmt.Sprintf(`'%s'`, m))
+			var columnDef string
+
+			// ==========================
+			// ENUM
+			// ==========================
+			if strings.Contains(ts, "enum(") {
+
+				start := strings.Index(ts, "(")
+				end := strings.LastIndex(ts, ")")
+
+				values := strings.Split(ts[start+1:end], ",")
+
+				var enumValues []string
+				for _, v := range values {
+					v = strings.TrimSpace(v)
+					enumValues = append(enumValues, fmt.Sprintf("'%s'", v))
 				}
 
-				x += fmt.Sprintf("%s_ty NOT NULL DEFAULT %s", strings.ToLower(t.Name()), n[0])
-				ty += fmt.Sprintf(`CREATE TYPE %s_ty AS ENUM %s; `, strings.ToLower(t.Name()), "("+strings.Join(n, ",")+")")
-			}
+				enumType := strings.ToLower(textformater.ToSnakeCase(t.Name())) + "_ty"
+				createTypeSQL = fmt.Sprintf("CREATE TYPE %s AS ENUM (%s);", enumType, strings.Join(enumValues, ","))
+				columnDef = fmt.Sprintf("%s %s NOT NULL DEFAULT %s", td, enumType, enumValues[0])
 
-			cut := strings.Split(ts, ";")
-
-			if !strings.Contains(ts, "enum") {
-				for l := range len(cut) {
-					c := strings.Split(cut[l], "-")
-
-					for n := range len(c) {
-						x += fmt.Sprintf("%s ", c[n])
-					}
-				}
-			}
-
-			if i == t.NumField()-1 {
-				args += fmt.Sprintf("%s %s", strings.ToLower(td), x)
 			} else {
-				args += fmt.Sprintf("%s %s,", strings.ToLower(td), x)
+
+				var parts []string
+
+				for _, item := range strings.Split(ts, ";") {
+
+					for _, p := range strings.Split(item, "-") {
+						parts = append(parts, p)
+					}
+
+				}
+
+				columnDef = fmt.Sprintf("%s %s", td, strings.Join(parts, " "))
 			}
 
-			st := t.Field(i).Tag.Get("relation")
-			if st != "" {
-				ct := strings.Split(st, ";")
-				args += fmt.Sprintf(", FOREIGN KEY (%s) REFERENCES %s ON DELETE %s", td, ct[0], strings.ToUpper(ct[1]))
+			columns = append(columns, columnDef)
+
+			// ==========================
+			// RELATION
+			// ==========================
+			rel := field.Tag.Get("relation")
+			if rel != "" {
+
+				r := strings.Split(rel, ";")
+
+				if len(r) != 2 {
+					log.Fatalf("invalid relation tag: %s", rel)
+				}
+
+				ref := strings.Split(r[0], ".")
+
+				if len(ref) != 2 {
+					log.Fatalf("invalid relation reference: %s", rel)
+				}
+
+				constraints = append(constraints,
+					fmt.Sprintf("FOREIGN KEY (%s) REFERENCES %s(%s) ON DELETE %s", td, ref[0], ref[1], strings.ToUpper(r[1])),
+				)
 			}
 		}
 
-		query := fmt.Sprintf(`%s CREATE TABLE IF NOT EXISTS %s (%s)`, ty, strings.ToLower(t.Name()), args)
+		args := strings.Join(append(columns, constraints...), ", ")
+		query := fmt.Sprintf("%s CREATE TABLE IF NOT EXISTS %s (%s)", createTypeSQL, strings.ToLower(textformater.ToSnakeCase(t.Name())), args)
+
 		if _, err := q.db.Exec(query); err != nil {
+
 			if strings.Contains(err.Error(), "does not exist") ||
 				strings.Contains(err.Error(), "not found") {
+
 				fmt.Printf("⚠️  Skipping %s: %v\n", strings.ToLower(t.Name()), err)
 				continue
-			} else {
-				fmt.Println(query)
-				log.Fatalf("exec %s: %v", strings.ToLower(t.Name()), err)
 			}
+
+			fmt.Println(query)
+			log.Fatalf("exec %s: %v", strings.ToLower(t.Name()), err)
 		}
 	}
 

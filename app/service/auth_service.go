@@ -6,48 +6,44 @@ import (
 	"time"
 
 	"github.com/MnPutrav2/go_architecture/app/model"
+	"github.com/MnPutrav2/go_architecture/app/pkg/auth"
 	jwtEnc "github.com/MnPutrav2/go_architecture/app/pkg/auth/jwt"
 	"github.com/MnPutrav2/go_architecture/app/pkg/password"
 	"github.com/MnPutrav2/go_architecture/app/repository"
 )
 
-type UserService struct {
-	repo repository.UserRepository
+type AuthService struct {
+	repo  repository.AuthRepository
+	repo2 repository.UserRepository
 }
 
-func InitUserService(repo repository.UserRepository) *UserService {
-	return &UserService{repo: repo}
+func InitAuthService(repo repository.AuthRepository, repo2 repository.UserRepository) *AuthService {
+	return &AuthService{repo: repo, repo2: repo2}
 }
 
 // Entry
-func (s *UserService) CreateUserService(ctx context.Context, request model.CreateUser) error {
 
-	pw, err := password.Hash(request.Password)
-	if err != nil {
-		return err
-	}
-
-	payload := model.CreateUser{
-		Name:     request.Name,
-		Password: pw,
-		Email:    request.Email,
-	}
-
-	if err := s.repo.CreateUserRepository(ctx, payload); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *UserService) LoginUserService(ctx context.Context, username model.LoginUser) (model.Token, error) {
-	result, err := s.repo.GetUserRepository(ctx, username.Name)
+func (s *AuthService) LoginService(ctx context.Context, username model.LoginUser) (model.Token, error) {
+	result, err := s.repo2.GetUserRepository(ctx, username.Name)
 	if err != nil {
 		return model.Token{}, err
 	}
 
 	if !password.Check(username.Password, result.Password) {
 		return model.Token{}, fmt.Errorf("invalid username or password")
+	}
+
+	refreshToken, hash, exp, err := auth.GenerateRefreshToken()
+	if err != nil {
+		return model.Token{}, err
+	}
+
+	if err := s.repo.InsertRefreshToken(ctx, model.RefreshTokenInsert{
+		UserID:    result.ID,
+		TokenHash: hash,
+		ExpiredAt: exp,
+	}); err != nil {
+		return model.Token{}, err
 	}
 
 	token, exp, err := jwtEnc.GenerateJWT(jwtEnc.User{
@@ -61,5 +57,5 @@ func (s *UserService) LoginUserService(ctx context.Context, username model.Login
 		return model.Token{}, err
 	}
 
-	return model.Token{Token: token, Expired: exp}, nil
+	return model.Token{Token: token, RefreshToken: refreshToken, Expired: exp}, nil
 }

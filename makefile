@@ -1,11 +1,19 @@
 include .env
 
+migrate:
+	go run ./cmd/_cli migrate
+
+rollback:
+	go run ./cmd/_cli rollback
+
 build:
-	go build -o $(APP_NAME).exe ./cmd/server
-	npm run build
+	go run ./cmd/_cli build
 
 run:
 	go run ./cmd/server
+
+start:
+	./final/app/server
 
 template:
 	go run ./cmd/_cli make:template name=$(name) type=$(type)

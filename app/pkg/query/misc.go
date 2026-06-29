@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 
+	textformater "github.com/MnPutrav2/go_architecture/app/pkg/text_formater"
 	_ "github.com/lib/pq"
 )
 
@@ -57,7 +58,7 @@ func (q *InitQuery[T]) Join(table, where string) *InitQuery[T] {
 		for _, p := range parts[0:] {
 			if p == "primary key" {
 				f := field.Tag.Get("db")
-				q.query += fmt.Sprintf(" INNER JOIN %s ON %s.%s = %s.%s", table, strings.ToLower(t.Name()), strings.ToLower(f), table, where)
+				q.query += fmt.Sprintf(" INNER JOIN %s ON %s.%s = %s.%s", table, strings.ToLower(textformater.ToSnakeCase(t.Name())), strings.ToLower(f), table, where)
 			}
 		}
 	}

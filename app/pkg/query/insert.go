@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	textformater "github.com/MnPutrav2/go_architecture/app/pkg/text_formater"
 )
 
 func (q *InitQuery[T]) Insert(D any) *InitQuery[T] {
@@ -56,7 +58,7 @@ func (q *InitQuery[T]) Insert(D any) *InitQuery[T] {
 
 		q.query = fmt.Sprintf(
 			"INSERT INTO %s(%s) VALUES %s",
-			strings.ToLower(t.Name()),
+			strings.ToLower(textformater.ToSnakeCase(t.Name())),
 			strings.Join(columns, ", "),
 			strings.Join(placeholders, ", "),
 		)
@@ -79,7 +81,7 @@ func (q *InitQuery[T]) Insert(D any) *InitQuery[T] {
 
 	q.query = fmt.Sprintf(
 		"INSERT INTO %s(%s) VALUES(%s)",
-		strings.ToLower(t.Name()),
+		strings.ToLower(textformater.ToSnakeCase(t.Name())),
 		strings.Join(columns, ", "),
 		strings.Join(placeholders, ","),
 	)
