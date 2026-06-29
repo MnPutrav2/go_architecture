@@ -1,5 +1,8 @@
 include .env
 
+install:
+	go run ./cmd/_cli install
+
 migrate:
 	go run ./cmd/_cli migrate
 
