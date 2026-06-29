@@ -10,9 +10,9 @@ func TemplateHandle(name string) {
 import (
 	"context"
 	"net/http"
-	"%s/internal/helper"
+	"%s/app/helper"
 
-	"%s/internal/service"
+	"%s/app/service"
 )
 
 func RenameThisHandler(service service.%sService) http.HandlerFunc {
@@ -56,7 +56,7 @@ func TemplateService(name string) {
 	temp := fmt.Sprintf(`package service
 
 import (
-	"%s/internal/repository"
+	"%s/app/repository"
 )
 
 type %sService struct {

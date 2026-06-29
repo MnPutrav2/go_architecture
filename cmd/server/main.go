@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/MnPutrav2/go_architecture/config"
-	"github.com/MnPutrav2/go_architecture/internal/http/route"
-	"github.com/MnPutrav2/go_architecture/internal/migration"
+	"github.com/MnPutrav2/go_architecture/app/config"
+	"github.com/MnPutrav2/go_architecture/app/migration"
+	route "github.com/MnPutrav2/go_architecture/routes"
 	"github.com/joho/godotenv"
 )
 
@@ -17,6 +17,7 @@ func main() {
 	_ = godotenv.Load()
 	db := config.InitDB()
 	defer db.Close()
+	mux := http.NewServeMux()
 
 	auto, err := strconv.ParseBool(os.Getenv("AUTO_MIGRATE"))
 	if err != nil {
@@ -31,7 +32,7 @@ func main() {
 	listen := os.Getenv("LISTEN_PROD")
 	srv := &http.Server{
 		Addr:    listen,
-		Handler: route.Route(db),
+		Handler: route.Route(mux, db),
 	}
 
 	list := fmt.Sprintf(`
