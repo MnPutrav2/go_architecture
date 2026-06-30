@@ -52,7 +52,7 @@ function RegisterCard({onClose}: {onClose: () => void}): JSX.Element {
         <section style={{width: "15rem"}}>
             <h2 style={{margin: "0.5rem", marginBottom: "1rem", textAlign: "center"}}>Register</h2>
             <Input tipe='text' placeholder='username' value={registerPayload.name} onChange={(e) => setRegisterPayload({...registerPayload, name: e.target.value})} />
-            <Input tipe='text' placeholder='password' value={registerPayload.password} onChange={(e) => setRegisterPayload({...registerPayload, password: e.target.value})} />
+            <Input tipe='password' placeholder='password' value={registerPayload.password} onChange={(e) => setRegisterPayload({...registerPayload, password: e.target.value})} />
             <Input tipe='email' placeholder='email' value={registerPayload.email} onChange={(e) => setRegisterPayload({...registerPayload, email: e.target.value})} />
             <div style={{margin: "0.5rem", marginTop: "1rem"}}><button className='register' style={{width: "100%"}} onClick={() => register()}>Register</button></div>
         </section>

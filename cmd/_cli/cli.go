@@ -24,17 +24,17 @@ func main() {
 
 	switch os.Args[1] {
 	case "install":
-		if err := exec.Cmd("go", "mod", "install").Run(); err != nil {
+		if err := exec.Command("go", "mod", "download").Run(); err != nil {
 			fmt.Printf("failed install depedency : %s", err)
 			return
 		}
 
-		if err := exec.Cmd("npm", "install").Run(); err != nil {
+		if err := exec.Command("npm", "install").Run(); err != nil {
 			fmt.Printf("failed install depedency : %s", err)
 			return
 		}
 
-		if err := exec.Cmd("cp", ".env.example", ".env"); err != nil {
+		if err := exec.Command("cp", ".env.example", ".env"); err != nil {
 			fmt.Printf("failed copy .env : %s", err)
 			return
 		}
