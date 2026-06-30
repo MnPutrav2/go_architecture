@@ -32,6 +32,16 @@ func (q *InitQuery[T]) Like(que string, arg string) *InitQuery[T] {
 	return q
 }
 
+func (q *InitQuery[T]) Greater(que string, arg string) *InitQuery[T] {
+	q.query += fmt.Sprintf("%s > '%s'", que, arg)
+	return q
+}
+
+func (q *InitQuery[T]) Less(que string, arg string) *InitQuery[T] {
+	q.query += fmt.Sprintf("%s < '%s'", que, arg)
+	return q
+}
+
 func (q *InitQuery[T]) And() *InitQuery[T] {
 	q.query += " AND "
 	return q

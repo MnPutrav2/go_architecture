@@ -6,6 +6,7 @@ import (
 
 	"github.com/MnPutrav2/go_architecture/app/model"
 	"github.com/MnPutrav2/go_architecture/app/pkg/query"
+	"github.com/google/uuid"
 )
 
 type UserRepository struct {
@@ -26,7 +27,16 @@ func (q *UserRepository) CreateUserRepository(ctx context.Context, request model
 }
 
 func (q *UserRepository) GetUserRepository(ctx context.Context, username string) (model.Users, error) {
-	result, err := query.Init[model.Users](q.db).Select("id, name, password, email").Where("name", username).Find(ctx)
+	result, err := query.Init[model.Users](q.db).Select("id, name, password, email, role").Where("name", username).Find(ctx)
+	if err != nil {
+		return model.Users{}, err
+	}
+
+	return result, nil
+}
+
+func (q *UserRepository) GetUserByIdRepository(ctx context.Context, id uuid.UUID) (model.Users, error) {
+	result, err := query.Init[model.Users](q.db).Select("id, name, password, email, role").Where("id", id.String()).Find(ctx)
 	if err != nil {
 		return model.Users{}, err
 	}

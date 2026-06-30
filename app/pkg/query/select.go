@@ -28,3 +28,14 @@ func (q *InitQuery[T]) Select(arg string) *InitQuery[T] {
 	q.query += fmt.Sprintf("SELECT %s FROM %s", query, strings.ToLower(textformater.ToSnakeCase(t.Name())))
 	return q
 }
+
+func (q *InitQuery[T]) SelectCount() *InitQuery[T] {
+	t := reflect.TypeOf(q.model)
+
+	if t.Kind() == reflect.Pointer {
+		t = t.Elem()
+	}
+
+	q.query += fmt.Sprintf("SELECT COUNT(*) FROM %s", strings.ToLower(textformater.ToSnakeCase(t.Name())))
+	return q
+}

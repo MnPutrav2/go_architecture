@@ -22,8 +22,14 @@ type Token struct {
 	Expired      time.Time `json:"expired"`
 }
 
-type RefreshTokenInsert struct {
+type RefreshTokenPayload struct {
 	UserID    uuid.UUID `json:"user_id" db:"user_id"`
 	TokenHash string    `json:"token_hash" db:"token_hash"`
 	ExpiredAt time.Time `json:"expired_at" db:"expired_at"`
+}
+
+// Request
+
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" db:"token_hash" validate:"required"`
 }

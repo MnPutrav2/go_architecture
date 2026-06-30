@@ -40,6 +40,15 @@ func (q *InitQuery[T]) Exec(ctx context.Context) error {
 
 }
 
+func (q *InitQuery[T]) ScanAndCount(ctx context.Context) (int, error) {
+	var count int
+	if err := q.db.QueryRowContext(ctx, q.query, q.value...).Scan(&count); err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (q *InitQuery[T]) Find(ctx context.Context) (T, error) {
 
 	fmt.Println(q.query)

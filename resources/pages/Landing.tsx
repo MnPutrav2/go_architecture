@@ -16,6 +16,7 @@ function LoginCard({onClose}: {onClose: () => void}): JSX.Element {
         try {
             const json = await new Request('http://localhost:8080/api/login').POST<Login, Response<Token>>(loginPayload)
             sessionStorage.setItem("token", json.result.token)
+            sessionStorage.setItem("refresh_token", json.result.refresh_token)
             alert("success")
             onClose()
             navigate("/dashboard")
