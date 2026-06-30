@@ -11,5 +11,6 @@ export interface Login {
 
 export interface Token {
     token: string
+    refresh_token: string
     expired: string
 }

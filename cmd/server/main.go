@@ -36,12 +36,12 @@ func main() {
 	}
 
 	list := fmt.Sprintf(`
-====== GOLANG ======
+====== %s ======
 			
 server running  	: %s
 start in		: %s 
 
---- [ APP LOG ] ---`, listen, time.Now().Format("2006-01-02 15:04:05"))
+--- [ APP LOG ] ---`, os.Getenv("APP_NAME"), listen, time.Now().Format("2006-01-02 15:04:05"))
 
 	fmt.Println(list)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

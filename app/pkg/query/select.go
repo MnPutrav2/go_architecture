@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	textformater "github.com/MnPutrav2/go_architecture/app/pkg/text_formater"
 )
 
 func (q *InitQuery[T]) Select(arg string) *InitQuery[T] {
@@ -23,6 +25,17 @@ func (q *InitQuery[T]) Select(arg string) *InitQuery[T] {
 		}
 	}
 
-	q.query += fmt.Sprintf("SELECT %s FROM %s", query, strings.ToLower(t.Name()))
+	q.query += fmt.Sprintf("SELECT %s FROM %s", query, strings.ToLower(textformater.ToSnakeCase(t.Name())))
+	return q
+}
+
+func (q *InitQuery[T]) SelectCount() *InitQuery[T] {
+	t := reflect.TypeOf(q.model)
+
+	if t.Kind() == reflect.Pointer {
+		t = t.Elem()
+	}
+
+	q.query += fmt.Sprintf("SELECT COUNT(*) FROM %s", strings.ToLower(textformater.ToSnakeCase(t.Name())))
 	return q
 }

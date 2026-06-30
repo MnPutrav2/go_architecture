@@ -5,6 +5,8 @@ import (
 	"log"
 	"reflect"
 	"strings"
+
+	textformater "github.com/MnPutrav2/go_architecture/app/pkg/text_formater"
 )
 
 func (q *Initdb) Rollback(table ...any) {
@@ -25,19 +27,19 @@ func (q *Initdb) Rollback(table ...any) {
 			ts := t.Field(i).Tag.Get("structure")
 
 			if strings.Contains(ts, "enum") {
-				x = append(x, fmt.Sprintf(`DROP TYPE IF EXISTS %s_ty`, strings.ToLower(t.Name())))
+				x = append(x, fmt.Sprintf(`DROP TYPE IF EXISTS %s_ty`, strings.ToLower(textformater.ToSnakeCase(t.Name()))))
 			}
 		}
 
-		query := fmt.Sprintf(`%s DROP TABLE %s`, strings.Join(x, ";"), strings.ToLower(t.Name()))
+		query := fmt.Sprintf(`%s DROP TABLE %s CASCADE`, strings.Join(x, ";"), strings.ToLower(textformater.ToSnakeCase(t.Name())))
 		if _, err := q.db.Exec(query); err != nil {
 			if strings.Contains(err.Error(), "does not exist") ||
 				strings.Contains(err.Error(), "not found") {
-				fmt.Printf("⚠️  Skipping %s: %v\n", strings.ToLower(t.Name()), err)
+				fmt.Printf("⚠️  Skipping %s: %v\n", strings.ToLower(textformater.ToSnakeCase(t.Name())), err)
 				continue
 			} else {
 				fmt.Println(query)
-				log.Fatalf("exec %s: %v", strings.ToLower(t.Name()), err)
+				log.Fatalf("exec %s: %v", strings.ToLower(textformater.ToSnakeCase(t.Name())), err)
 			}
 		}
 	}

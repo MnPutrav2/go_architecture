@@ -10,5 +10,6 @@ import (
 func Rollback(db *sql.DB) {
 	query.InitDB(db).Rollback(
 		model.Users{},
+		model.RefreshToken{},
 	)
 }

@@ -13,20 +13,6 @@ import (
 
 // Entry
 
-func GetUserHandler(service service.UserService) http.HandlerFunc {
-	return helper.Handler(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-
-		result, err := service.GetUserService(ctx)
-		if err != nil {
-			res.BadRequest("Failed create account", err, w, r)
-			return
-		}
-
-		res.Data("Success", result, w, r)
-
-	})
-}
-
 func CreateUserHandler(service service.UserService) http.HandlerFunc {
 	return helper.Handler(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
