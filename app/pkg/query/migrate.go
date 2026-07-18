@@ -56,7 +56,22 @@ func (q *Initdb) Migrate(table ...any) {
 				}
 
 				enumType := strings.ToLower(textformater.ToSnakeCase(t.Name())) + "_ty"
-				createTypeSQL = fmt.Sprintf("CREATE TYPE %s AS ENUM (%s);", enumType, strings.Join(enumValues, ","))
+				createTypeSQL = fmt.Sprintf(`
+					DO $$
+					BEGIN
+						IF NOT EXISTS (
+							SELECT 1
+							FROM pg_type
+							WHERE typname = '%s'
+						) THEN
+							CREATE TYPE %s AS ENUM (%s);
+						END IF;
+					END
+					$$;`,
+					enumType,
+					enumType,
+					strings.Join(enumValues, ","),
+				)
 				columnDef = fmt.Sprintf("%s %s NOT NULL DEFAULT %s", td, enumType, enumValues[0])
 
 			} else {

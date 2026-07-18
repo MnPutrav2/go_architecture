@@ -72,8 +72,6 @@ export default function Landing() {
 
             <section className="container">
                 <div className="header">
-                    <h2>Welcome</h2>
-                    <p style={{marginTop: "0.5rem"}}>in</p>
                     <h1>DIGO</h1>
                     <p>
                         React + Golang structure project like laravel
