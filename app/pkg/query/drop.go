@@ -22,16 +22,31 @@ func (q *Initdb) Rollback(table ...any) {
 			continue
 		}
 
-		var x []string
+		queries := []string{}
+
+		queries = append(
+			queries,
+			fmt.Sprintf(
+				"DROP TABLE IF EXISTS %s CASCADE",
+				strings.ToLower(textformater.ToSnakeCase(t.Name())),
+			),
+		)
+
 		for i := 0; i < t.NumField(); i++ {
 			ts := t.Field(i).Tag.Get("structure")
 
 			if strings.Contains(ts, "enum") {
-				x = append(x, fmt.Sprintf(`DROP TYPE IF EXISTS %s_ty`, strings.ToLower(textformater.ToSnakeCase(t.Name()))))
+				queries = append(
+					queries,
+					fmt.Sprintf(
+						"DROP TYPE IF EXISTS %s_ty",
+						strings.ToLower(textformater.ToSnakeCase(t.Name())),
+					),
+				)
 			}
 		}
 
-		query := fmt.Sprintf(`%s DROP TABLE %s CASCADE`, strings.Join(x, ";"), strings.ToLower(textformater.ToSnakeCase(t.Name())))
+		query := strings.Join(queries, "; ")
 		if _, err := q.db.Exec(query); err != nil {
 			if strings.Contains(err.Error(), "does not exist") ||
 				strings.Contains(err.Error(), "not found") {
