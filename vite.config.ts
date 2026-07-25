@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: "final/web",
+    outDir: "build/web",
     assetsDir: "assets",
     emptyOutDir: true
   },
