@@ -12,9 +12,6 @@ rollback:
 build:
 	go run ./cmd/_cli build
 
-run:
-	go run ./cmd/server
-
 start:
 	./final/app/server
 

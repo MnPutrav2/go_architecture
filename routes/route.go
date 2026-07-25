@@ -19,12 +19,12 @@ func Route(mux *http.ServeMux, db *sql.DB) http.Handler {
 	// Web
 	mux.Handle("/assets/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Serving : ", r.URL.Path)
-		http.StripPrefix("/assets/", http.FileServer(http.Dir("./final/web/assets"))).ServeHTTP(w, r)
+		http.StripPrefix("/assets/", http.FileServer(http.Dir("./build/web/assets"))).ServeHTTP(w, r)
 	}))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Serving : index.html")
-		http.ServeFile(w, r, "./final/web/index.html")
+		http.ServeFile(w, r, "./build/web/index.html")
 	})
 	// Web
 

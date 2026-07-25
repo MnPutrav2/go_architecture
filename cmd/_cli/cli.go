@@ -45,20 +45,20 @@ func main() {
 	case "rollback":
 		migration.Rollback(db)
 	case "build":
-		if err := os.MkdirAll("./final/app", 0755); err != nil {
+		if err := os.MkdirAll("./build/app", 0755); err != nil {
 			fmt.Printf("failed create folder : %s", err)
 			return
 		}
-		fmt.Println("create output folder success : ./final/app/")
+		fmt.Println("create output folder success : ./build/app/")
 
-		if err := os.MkdirAll("./final/web", 0755); err != nil {
+		if err := os.MkdirAll("./build/web", 0755); err != nil {
 			fmt.Printf("failed create folder : %s", err)
 			return
 		}
-		fmt.Println("create output folder success : ./final/web/")
+		fmt.Println("create output folder success : ./build/web/")
 
 		fmt.Println("try build app")
-		if err := exec.Command("go", "build", "-o", "./final/app/server", "./cmd/server").Run(); err != nil {
+		if err := exec.Command("go", "build", "-o", "./build/app/server", "./cmd/server").Run(); err != nil {
 			fmt.Printf("build failed : %s", err)
 			return
 		}
