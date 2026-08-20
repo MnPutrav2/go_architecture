@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/MnPutrav2/go_architecture/app/config"
 	"github.com/MnPutrav2/go_architecture/app/migration"
@@ -35,15 +34,7 @@ func main() {
 		Handler: route.Route(mux, db),
 	}
 
-	list := fmt.Sprintf(`
-====== %s ======
-			
-server running  	: %s
-start in		: %s 
-
---- [ APP LOG ] ---`, os.Getenv("APP_NAME"), listen, time.Now().Format("2006-01-02 15:04:05"))
-
-	fmt.Println(list)
+	fmt.Println("--- [ APP LOG ] ---")
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		panic(err)
 	}
