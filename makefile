@@ -18,6 +18,9 @@ build:
 start:
 	./build/app/server
 
+dev:
+	go run ./cmd/_cli dev
+
 template:
 	go run ./cmd/_cli make:template name=$(name) type=$(type)
 
