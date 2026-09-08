@@ -43,9 +43,13 @@ func main() {
 
 		fmt.Println("Done.")
 	case "migrate":
-		migration.Auto(db)
+		migration.Migrate(db)
 	case "rollback":
 		migration.Rollback(db)
+	case "fresh":
+		migration.Fresh(db)
+	case "seed":
+		migration.Seed("user")
 	case "build":
 		if err := os.MkdirAll("./build/app", 0755); err != nil {
 			fmt.Printf("failed create folder : %s", err)
@@ -92,16 +96,16 @@ func main() {
 func runDev() {
 	fmt.Println("Starting development server...")
 
-	backend := exec.Command("go", "run", "./cmd/server")
-
-	backend.Stdout = os.Stdout
-	backend.Stderr = os.Stderr
-
 	frontend := exec.Command("npm", "run", "dev")
 	frontend.Dir = "./"
 
 	frontend.Stdout = os.Stdout
 	frontend.Stderr = os.Stderr
+
+	backend := exec.Command("go", "run", "./cmd/server")
+
+	backend.Stdout = os.Stdout
+	backend.Stderr = os.Stderr
 
 	if err := backend.Start(); err != nil {
 		fmt.Println("Failed to start backend:", err)

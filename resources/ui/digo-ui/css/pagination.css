@@ -1,0 +1,39 @@
+.pagination {
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background-color: var(--background-secondary);
+}
+
+.pagination > div:nth-child(1) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.pagination > div:nth-child(1) > p:nth-child(1) {
+  color: var(--text-secondary);
+}
+
+.pagination > div:nth-child(1) > p:nth-child(2) {
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.2rem;
+  background-color: var(--input);
+  border: 1px solid var(--line);
+}
+
+.pagination > div:nth-child(3) {
+  display: flex;
+  justify-content: center;
+  gap: 1;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.pagination .page-number {
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background-color: var(--input);
+  padding: 0.5rem 1rem;
+}

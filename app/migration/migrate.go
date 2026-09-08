@@ -7,7 +7,7 @@ import (
 	"github.com/MnPutrav2/go_architecture/app/pkg/query"
 )
 
-func Auto(db *sql.DB) {
+func Migrate(db *sql.DB) {
 	query.InitDB(db).Migrate(
 		model.Users{},
 		model.RefreshToken{},

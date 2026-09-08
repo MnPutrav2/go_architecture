@@ -9,6 +9,12 @@ migrate:
 rollback:
 	go run ./cmd/_cli rollback
 
+fresh:
+	go run ./cmd/_cli fresh
+
+seed:
+	go run ./cmd/_cli seed
+
 run:
 	go run ./cmd/server
 

@@ -34,6 +34,14 @@ func LoginUserHandler(service service.AuthService) http.HandlerFunc {
 	})
 }
 
+func LoginStatusHandler(service service.AuthService) http.HandlerFunc {
+	return helper.Handler(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+
+		res.Success("success", w, r)
+
+	})
+}
+
 func RefreshTokenHandler(service service.AuthService) http.HandlerFunc {
 	return helper.Handler(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 

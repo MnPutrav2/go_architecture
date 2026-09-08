@@ -130,6 +130,7 @@ func (q *Initdb) Migrate(table ...any) {
 			fmt.Println(query)
 			log.Fatalf("exec %s: %v", strings.ToLower(t.Name()), err)
 		}
+
 	}
 
 	fmt.Println("Migration completed.")

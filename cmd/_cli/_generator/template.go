@@ -17,10 +17,14 @@ func Tempate(name, ty string) {
 	case "handler":
 		temp.TemplateHandle(name)
 
+	case "model":
+		temp.TemplateModel(name)
+
 	case "all":
 		temp.TemplateRepo(name)
 		temp.TemplateService(name)
 		temp.TemplateHandle(name)
+		temp.TemplateModel(name)
 
 	default:
 		fmt.Println("command not found")
