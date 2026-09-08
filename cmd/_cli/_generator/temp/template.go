@@ -2,6 +2,8 @@ package temp
 
 import (
 	"fmt"
+	"os"
+	"strings"
 )
 
 func TemplateHandle(name string) {
@@ -28,6 +30,23 @@ func RenameThisHandler(service service.%sService) http.HandlerFunc {
 
 	handle := process2(temp, "http/handler", name+"_handler")
 	fmt.Println(handle)
+}
+
+func TemplateModel(name string) {
+	temp := fmt.Sprintf(`package model
+
+// Entry
+
+type %s struct {
+	// Input here
+}`, capitalize(name))
+
+	handle := process2(temp, "model/", name+"_model")
+	fmt.Println(handle)
+
+	if err := registerModel(capitalize(name)); err != nil {
+		panic(err)
+	}
 }
 
 func TemplateRepo(name string) {
@@ -72,4 +91,31 @@ func Init%sService(repo repository.%sRepository) *%sService {
 
 	handle := process2(temp, "service/", name+"_service")
 	fmt.Println(handle)
+}
+
+func registerModel(name string) error {
+	path := "app/util/registry_model.go"
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	content := string(data)
+
+	model := fmt.Sprintf("\tmodel.%s{},", name)
+
+	if strings.Contains(content, model) {
+		return nil
+	}
+
+	marker := "\t// @digo:models"
+
+	index := strings.Index(content, marker)
+	if index == -1 {
+		return fmt.Errorf("marker %q not found", marker)
+	}
+
+	content = content[:index] + model + "\n" + content[index:]
+	return os.WriteFile(path, []byte(content), 0644)
 }

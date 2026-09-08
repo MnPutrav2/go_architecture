@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/MnPutrav2/go_architecture/app/config"
-	"github.com/MnPutrav2/go_architecture/app/migration"
 	route "github.com/MnPutrav2/go_architecture/routes"
 	"github.com/joho/godotenv"
 )
@@ -17,16 +15,6 @@ func main() {
 	db := config.InitDB()
 	defer db.Close()
 	mux := http.NewServeMux()
-
-	auto, err := strconv.ParseBool(os.Getenv("AUTO_MIGRATE"))
-	if err != nil {
-		fmt.Println("env AUTO_MIGRATE need boolean")
-		return
-	}
-
-	if auto {
-		migration.Auto(db)
-	}
 
 	listen := os.Getenv("LISTEN_PROD")
 	srv := &http.Server{

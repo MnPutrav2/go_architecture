@@ -1,0 +1,15 @@
+.digo-input {
+    margin: 0.5rem;
+}
+
+.digo-input input, .digo-input >  textarea, .digo-input >  select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem;
+    border: 1px solid var(--line); 
+}
+
+.digo-input >  select option {
+    border: 1px solid var(--line); 
+}
+

@@ -1,99 +1,89 @@
 import LogoReact from '../assets/logo/react.png'
 import LogoGolang from '../assets/logo/golang.png'
-import { JSX, useRef, useState } from 'react';
-import { Login, Register, Token } from '../types/auth';
-import { Request } from '../lib/api';
-import Modal, { ModalRef } from '../components/Modal';
-import { Response } from '../types/response';
-import { Input } from '../components/Input';
-import { useNavigate } from 'react-router';
-
-function LoginCard({onClose}: {onClose: () => void}): JSX.Element {
-    const [loginPayload, setLoginPayload] = useState<Login>({name: "", password: ""})
-    const navigate = useNavigate()
-
-    async function login() {
-        try {
-            const json = await new Request('http://localhost:8080/api/login').POST<Login, Response<Token>>(loginPayload)
-            sessionStorage.setItem("token", json.result.token)
-            sessionStorage.setItem("refresh_token", json.result.refresh_token)
-            alert("success")
-            onClose()
-            navigate("/dashboard")
-        }catch(e){
-            alert(e)
-        }
-    }
-
-    return (
-        <section style={{width: "15rem"}}>
-            <h2 style={{margin: "0.5rem", marginBottom: "1rem", textAlign: "center"}}>Login</h2>
-            <Input tipe='text' placeholder='username' value={loginPayload.name} onChange={(e) => setLoginPayload({...loginPayload, name: e.target.value})} />
-            <Input tipe='password' placeholder='password' value={loginPayload.password} onChange={(e) => setLoginPayload({...loginPayload, password: e.target.value})} />
-            <div style={{margin: "0.5rem", marginTop: "1rem"}}><button className='register' style={{width: "100%", boxSizing: "border-box"}} onClick={() => login()}>Login</button></div>
-        </section>
-    )
-}
-
-function RegisterCard({onClose}: {onClose: () => void}): JSX.Element {
-    const [registerPayload, setRegisterPayload] = useState<Register>({name: "", password: "", email: ""})
-
-    async function register() {
-        try {
-            await new Request('http://localhost:8080/api/register').POST<Register>(registerPayload)
-            alert("success")
-            onClose()
-        }catch(e){
-            alert(e)
-        }
-    }
-
-    return (
-        <section style={{width: "15rem"}}>
-            <h2 style={{margin: "0.5rem", marginBottom: "1rem", textAlign: "center"}}>Register</h2>
-            <Input tipe='text' placeholder='username' value={registerPayload.name} onChange={(e) => setRegisterPayload({...registerPayload, name: e.target.value})} />
-            <Input tipe='password' placeholder='password' value={registerPayload.password} onChange={(e) => setRegisterPayload({...registerPayload, password: e.target.value})} />
-            <Input tipe='email' placeholder='email' value={registerPayload.email} onChange={(e) => setRegisterPayload({...registerPayload, email: e.target.value})} />
-            <div style={{margin: "0.5rem", marginTop: "1rem"}}><button className='register' style={{width: "100%"}} onClick={() => register()}>Register</button></div>
-        </section>
-    )
-}
+import { useEffect, useRef, useState } from 'react';
+import { Comp, components } from './var';
+import { ComponentsPreview, EmptyComponentsPreview } from '../components/ComponentsPreview';
+import { LineX, LineXsingle } from '../components/Line';
 
 export default function Landing() {
 
-    const registerRef = useRef<ModalRef>(null)
-    const loginRef = useRef<ModalRef>(null)
-    const [openRegister, setOpenRegister] = useState<boolean>(false)
-    const [openLogin, setOpenLogin] = useState<boolean>(false)
+    const [searchComponents, setSearchComponents] = useState<string>("")
+    const [component, setComponent] = useState<Comp[]>(components)
+    const [componentSelected, setComponentSelected] = useState<Comp | undefined>(undefined)
+
+    useEffect(() => {
+        setComponent(components.filter(item => item.label.includes(searchComponents)))
+    }, [searchComponents])
 
     return (
         <main>
             {/* Delete this */}
 
-            <section className="container">
-                <div className="header">
-                    <h1>DIGO</h1>
-                    <p>
-                        React + Golang structure project like laravel
-                    </p>
-                    <div className="logo">
-                        <img src={LogoReact} alt="" />
-                        <img src={LogoGolang} alt="" />
+            <section className='palette-2' style={{width: "100%", borderBottom: "1px solid var(--line)", borderTop: "1px solid var(--line)", display: "flex", justifyContent: "center"}}>
+                <LineX/>
+                <div className='palette-3' style={{width: "65%", padding: "2rem", display: "flex", justifyContent: "space-between"}}>
+                    <h1 style={{color: "white", fontSize: "5rem", backgroundColor: "black", display: "inline-block", padding: "1rem"}}>DIGO</h1>
+                    <p style={{width: "25rem"}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam, similique necessitatibus! Earum eum, magni exercitationem odio provident, veniam delectus, voluptas ipsa quas maiores ex natus perferendis laudantium illum amet ratione!</p>
+                </div>
+                <LineX/>
+            </section>
+
+            <section className='palette-4' style={{paddingLeft: "3rem", paddingRight: "3rem", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "center"}}>
+                <LineX/>
+                <div className='palette-1' style={{width: "100%", padding: "2rem"}}>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas totam perspiciatis quisquam, sequi praesentium blanditiis fugit libero repudiandae ea porro natus soluta at? Reiciendis commodi ducimus natus sed libero enim.</p>
+                </div>
+                <LineX/>
+            </section>
+
+            {/* <section style={{width: "100%", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "center"}}>
+                <div style={{padding: "2rem", borderRight: "1px dashed var(--line)"}}>
+                    <div style={{display: "flex", alignItems: "center", gap: "3rem"}}>
+                        <img style={{width: "10rem"}} src={LogoGolang} alt="" />
+                        <img style={{width: "5rem"}} src={LogoReact} alt="" />
                     </div>
-                    <div style={{display: 'flex', justifyContent: "center", gap: 10}}>
-                        <button className='login' style={{width: "50%"}} onClick={() => setOpenLogin(true)}>Test login</button>
-                        <button className='register' style={{width: "50%"}} onClick={() => setOpenRegister(true)}>Test register</button>
+                </div>
+                <div style={{flex: "1", padding: "2rem"}}></div>
+            </section> */}
+
+            <section style={{paddingRight: "3rem", paddingBottom: 0, paddingTop: "0"}}>
+                <div style={{display: "flex"}}>
+                    <LineXsingle/>
+                    <div style={{width: "100%", display: "flex", padding: "5rem"}}>
+                        <h1>UI COMPONENTS</h1>
+                    </div>
+                    <LineXsingle/>
+                </div>
+                <div style={{display: "flex"}}>
+                    <LineX/>
+                    <div className='palette-1' style={{minWidth: "15rem", borderTop: "1px solid var(--line)", borderRight: "1px solid var(--line)", display: "flex", flexDirection: "column"}}>
+                        <div style={{padding: "0.5rem"}}>
+                            <input style={{padding: "0.5rem", width: "100%"}} placeholder='Search component.' type="text" onChange={(e) => setSearchComponents(e.target.value)} />
+                        </div>
+                        {component.map((item, index) => (
+                            <p className='line-button' key={index} onClick={() => setComponentSelected(item)}>{item.name}</p>
+                        ))}
+                    </div>
+                    <div style={{flex: "1"}}>
+                        {componentSelected ? (
+                            <ComponentsPreview 
+                                component={componentSelected.component}
+                                code={componentSelected.code}
+                                imp={componentSelected.import}
+                            />
+                        ) : (
+                            <EmptyComponentsPreview/>
+                        )}
                     </div>
                 </div>
             </section>
 
-            <Modal ref={registerRef} open={openRegister} onClose={() => setOpenRegister(false)}>
-                <RegisterCard onClose={() => registerRef.current?.close()} />
-            </Modal>
-
-            <Modal ref={loginRef} open={openLogin} onClose={() => setOpenLogin(false)}>
-                <LoginCard onClose={() => loginRef.current?.close()} />
-            </Modal>
+            <footer className='palette-2' style={{width: "100%", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "center"}}>
+                <div className='palette-3' style={{display: "flex", borderLeft: "1px dashed var(--line)", borderRight: "1px dashed var(--line)", alignItems: "flex-start", padding: "5rem 2rem"}}>
+                    <h2 style={{fontSize: "2rem"}}>This</h2>
+                    <h1 style={{fontSize: "10rem"}}>DIGO</h1>
+                </div>
+            </footer>
 
             {/* Delete this */}
         </main>

@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func Link(page, size, count int, keyword string) (string, string) {
+func Link(page, size, count int, keyword string, more *string) (string, string) {
 	var previousLink string
 	var nextLink string
 
@@ -30,5 +30,9 @@ func Link(page, size, count int, keyword string) (string, string) {
 		}
 	}
 
-	return previousLink, nextLink
+	if more == nil {
+		return previousLink, nextLink
+	}
+
+	return fmt.Sprintf("%s&%s", previousLink, *more), fmt.Sprintf("%s&%s", nextLink, *more)
 }
